@@ -1,20 +1,22 @@
-from fastapi import HTTPException, Depends
-from fastapi.security import HTTPBearer
-from jose import JWTError, jwt
-from .config import settings
+# app/core/security.py
 
-security = HTTPBearer()
+from fastapi import Request, HTTPException
+from jose import jwt, JWTError
+from app.core.config import settings
 
-def validate_supabase_token(access_token) -> str:
+async def get_current_user(request: Request) -> str:
+    # Get token from cookies
+    access_token = request.cookies.get("access_token")
+    
+    if not access_token:
+        raise HTTPException(status_code=401, detail="Missing access token")
+
     try:
         payload = jwt.decode(
             access_token,
-            key=settings.SUPABASE_ANON_KEY,  # Supabase uses anon key as JWT secret
+            settings.SUPABASE_ANON_KEY,
             algorithms=["HS256"]
         )
-        user_id = payload.get("sub")
-        if not user_id:
-            raise HTTPException(status_code=401, detail="Invalid token")
-        return user_id , payload
-    except JWTError:
-        raise HTTPException(status_code=401, detail="Could not validate credentials")
+        return payload.get("sub")  # Return only user_id
+    except JWTError as e:
+        raise HTTPException(status_code=401, detail=f"Invalid token: {str(e)}")
