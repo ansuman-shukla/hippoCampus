@@ -1,7 +1,6 @@
 # links.py - API endpoints
-from fastapi import APIRouter, Depends , HTTPException
+from fastapi import APIRouter , HTTPException , Request
 from app.schema.link_schema import Link as link_schema
-from app.core.security import get_current_user
 from app.services.pinecone_service import save_to_vector_db , search_vector_db
 
 router = APIRouter()
@@ -9,8 +8,9 @@ router = APIRouter()
 @router.post("/save")
 async def save_link(
     link_data: link_schema,
-    user_id: str = Depends(get_current_user)
+    request: Request
 ):
+    user_id = request.state.user_id
     try:
         await save_to_vector_db(
             obj=link_data,
@@ -25,8 +25,10 @@ async def save_link(
 @router.post("/search")
 async def search_links(
     query: str,
-    user_id: str = Depends(get_current_user)
+    request: Request
 ):
+    
+    user_id = request.state.user_id
     try:
         results = await search_vector_db(
             query=query,
