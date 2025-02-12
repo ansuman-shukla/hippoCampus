@@ -1,9 +1,14 @@
 # links.py - API endpoints
-from fastapi import APIRouter , HTTPException , Request
+from fastapi import APIRouter , HTTPException , Request , Depends
 from app.schema.link_schema import Link as link_schema
 from app.services.pinecone_service import save_to_vector_db , search_vector_db
+from app.middleware.authentication import auth_middleware
 
-router = APIRouter()
+router = APIRouter(
+    prefix="/links",
+    tags=["Links"],
+    dependencies=[Depends(auth_middleware)]
+)
 
 @router.post("/save")
 async def save_link(

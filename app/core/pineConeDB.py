@@ -1,5 +1,5 @@
 from pinecone import Pinecone
-from config import settings
+from app.core.config import settings
 from langchain_community.retrievers import PineconeHybridSearchRetriever
 from pinecone_text.sparse import BM25Encoder
 import nltk

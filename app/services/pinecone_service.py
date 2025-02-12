@@ -4,7 +4,7 @@ from app.utils.site_name_extractor import extract_site_name
 from langchain_core.documents import Document
 from typing import List
 from typing import Optional, Dict
-
+from datetime import datetime
 
 async def save_to_vector_db(obj: LinkSchema, namespace: str):
     # Save the object to Pinecone
@@ -15,7 +15,8 @@ async def save_to_vector_db(obj: LinkSchema, namespace: str):
     metadata = {
         "title": obj.title,
         "note": obj.note,
-        "site_name": site_name
+        "site_name": site_name,
+        "date": datetime.now().isoformat(),
     }
     
     # Combine text content and include metadata

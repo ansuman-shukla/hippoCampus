@@ -5,3 +5,4 @@ class Link(BaseModel):
     note: str
     link: str
     
+    
