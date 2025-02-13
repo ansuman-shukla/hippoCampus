@@ -24,11 +24,17 @@ if index_name not in pc.list_indexes().names():
 
 index = pc.Index(index_name)
 
-embeddings = GoogleGenerativeAIEmbeddings(model="models/embedding-004" , google_api_key=GEMINI_API_KEY)
+embeddings = GoogleGenerativeAIEmbeddings(model="models/embedding-001" , google_api_key=GEMINI_API_KEY)
 
-bm25encoder = BM25Encoder()
+bm25encoder = BM25Encoder.default()
 
-def create_retriever(namespace: str):
-    return PineconeHybridSearchRetriever(index=index, embeddings=embeddings, sparse_encoder=bm25encoder , namespace=namespace)
+
+async def create_retriever(namespace: str , top_k: int = 5):
+    try:
+        PineconeHybridSearchRetriever(index=index, embeddings=embeddings, sparse_encoder=bm25encoder , namespace=namespace)
+    except Exception as e:
+        print(e)
+        return None
+    return PineconeHybridSearchRetriever(index=index, embeddings=embeddings, sparse_encoder=bm25encoder ,top_k=top_k ,namespace=namespace)
 
 

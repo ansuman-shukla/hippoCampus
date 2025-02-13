@@ -48,7 +48,7 @@ async def user_exists(user_id: str):
 
 
 async def create_user(user_data: dict):
-    await collection.insert_one(user_data)
+    collection.insert_one(user_data)
     return user_data
 
     

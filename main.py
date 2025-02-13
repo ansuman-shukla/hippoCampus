@@ -1,6 +1,5 @@
 from jose import jwt, JWTError
-from fastapi import FastAPI, Request, HTTPException
-import os
+from fastapi import FastAPI, Request, HTTPException 
 from dotenv import load_dotenv
 from app.routers.search_save_links import router as search_save_links_router
 from fastapi import Request, HTTPException
@@ -14,8 +13,10 @@ load_dotenv()
 app = FastAPI() 
 
 
-async def auth_middleware(request: Request):
-    # Get the access token from the request
+import time
+
+@app.middleware("http")
+async def authorisation_middleware(request: Request, call_next):
     access_token = request.cookies.get("access_token")
     refresh_token = request.cookies.get("refresh_token")
 
@@ -23,8 +24,9 @@ async def auth_middleware(request: Request):
         raise HTTPException(status_code=401, detail="Access token is missing")
     
     if refresh_token:
-        token = await create_tokens(refresh_token)
-        return token
+        # token = await create_tokens(refresh_token)
+        # return token
+        pass
 
     # Validate the access token
     try:
@@ -34,14 +36,62 @@ async def auth_middleware(request: Request):
     except JWTError as e:
         raise HTTPException(status_code=401, detail=f"Invalid token: {str(e)}")
     
-    create_user_if_not_exists(payload)
+    await create_user_if_not_exists(payload)
 
 
     # Continue the request
-    request.state.user_id = user_id
+    response = await call_next(request)
+
+    # Post-processing: modify response
+    # add the user id in the response cokkies.get
+    response.set_cookie(key="user_id", value=user_id , expires=time.time() + 3600, httponly=True)
+
+    return response
+
+
 
 app.include_router(search_save_links_router)
 
-@app.get("/")
-async def root():
-    return {"message": "Pls do /save to save a link or /search to search for a link"}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# @app.get("/")
+# async def root():
+# async def auth_middleware(request: Request):
+#     # Get the access token from the request
+#     access_token = request.cookies.get("access_token")
+#     refresh_token = request.cookies.get("refresh_token")
+
+#     if not access_token:
+#         raise HTTPException(status_code=401, detail="Access token is missing")
+    
+#     if refresh_token:
+#         token = await create_tokens(refresh_token)
+#         return token
+
+#     # Validate the access token
+#     try:
+#         payload = await decodeJWT(access_token)
+#         user_id = payload.get("sub")
+       
+#     except JWTError as e:
+#         raise HTTPException(status_code=401, detail=f"Invalid token: {str(e)}")
+    
+#     create_user_if_not_exists(payload)
+
+
+#     # Continue the request
+#     request.state.user_id = user_id
+#     return {"message": "Pls do /save to save a link or /search to search for a link"}
