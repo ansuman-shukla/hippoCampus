@@ -31,7 +31,5 @@ class BM25Storage:
         doc = bm25_collection.find_one({"namespace": namespace})
         if not doc:
             return None
-            
         encoder = BM25Encoder()
-        encoder.load(doc["state"])
         return encoder

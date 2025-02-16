@@ -1,10 +1,10 @@
-from fastapi import Request, HTTPException
 from jose import JWTError
+from fastapi import Request, HTTPException
+import time
 from app.utils.jwt import decodeJWT, create_tokens
 from app.services.user_service import create_user_if_not_exists
 
-
-async def auth_middleware(request: Request, call_next):
+async def auth_middleware(request: Request):
     # Get the access token from the request
     access_token = request.cookies.get("access_token")
     refresh_token = request.cookies.get("refresh_token")
@@ -13,8 +13,9 @@ async def auth_middleware(request: Request, call_next):
         raise HTTPException(status_code=401, detail="Access token is missing")
     
     if refresh_token:
-        token = await create_tokens(refresh_token)
-        return token
+        # token = await create_tokens(refresh_token)
+        # return token
+        pass
 
     # Validate the access token
     try:
@@ -24,10 +25,13 @@ async def auth_middleware(request: Request, call_next):
     except JWTError as e:
         raise HTTPException(status_code=401, detail=f"Invalid token: {str(e)}")
     
-    create_user_if_not_exists(payload)
+    await create_user_if_not_exists(payload)
 
 
-    # Continue the request
-    request.state.user_id = user_id
-    response = await call_next(request)
-    return response
+
+    return request
+
+    # Post-processing: modify response
+    # add the user id in the response cokkies.get
+
+    

@@ -6,9 +6,7 @@ from fastapi import Request, HTTPException
 from jose import JWTError
 from app.utils.jwt import decodeJWT, create_tokens
 from app.services.user_service import create_user_if_not_exists
-
-
-
+from app.routers.get_quotes import router as get_quotes_router
 load_dotenv()
 app = FastAPI() 
 
@@ -43,15 +41,22 @@ async def authorisation_middleware(request: Request, call_next):
     response = await call_next(request)
 
     # Post-processing: modify response
-    # add the user id in the response cokkies.get
-    response.set_cookie(key="user_id", value=user_id , expires=time.time() + 3600, httponly=True)
+    if request.get("user_id") is None:
+        response.set_cookie(key="user_id", value=user_id , expires=time.time() + 3600, httponly=True)
+
+    if request.get("user_name") is None or request.get("user_picture") is None:
+        user_metadata = payload.get("user_metadata", {})
+        full_name = user_metadata.get("full_name")
+        picture = user_metadata.get("picture")
+        response.set_cookie(key="user_name", value=full_name , expires=time.time() + 3600, httponly=True)
+        response.set_cookie(key="user_picture", value=picture , expires=time.time() + 3600, httponly=True)
 
     return response
 
 
 
 app.include_router(search_save_links_router)
-
+app.include_router(get_quotes_router)
 
 
 
