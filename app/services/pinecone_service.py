@@ -8,11 +8,14 @@ from app.exceptions.httpExceptionsSearch import *
 from app.exceptions.httpExceptionsSave import *
 from datetime import datetime
 from app.exceptions.httpExceptionsSearch import *
+from app.services.memories_service import save_memory_to_db 
 
 
 async def save_to_vector_db(obj: LinkSchema, namespace: str):
     """Save document to vector database with enhanced error handling"""
+
     doc_id = f"{namespace}-{datetime.now().timestamp()}"
+
     logger_context = {
         "user_id": namespace,
         "doc_id": doc_id,
@@ -20,14 +23,6 @@ async def save_to_vector_db(obj: LinkSchema, namespace: str):
     }
     
     try:
-        # Validate URL format
-        if not obj.link.startswith(("http://", "https://")):
-            raise InvalidURLError(
-                message="Invalid URL format",
-                user_id=namespace,
-                doc_id=doc_id
-            )
-
         logger.info("Creating vector DB retriever", extra=logger_context)
         retriever = await create_retriever(namespace=namespace)
         
@@ -40,17 +35,21 @@ async def save_to_vector_db(obj: LinkSchema, namespace: str):
         metadata = {
             "title": obj.title,
             "note": obj.note,
+            "source_url": obj.link,
             "site_name": site_name,
             "date": datetime.now().isoformat(),
-            "source_url": obj.link,
-            "doc_id": doc_id
         }
+        
+        #save the memories to the database
+        await save_memory_to_db(metadata)
+
         
         text_to_save = f"{obj.title}, {obj.note} , {site_name}"
         logger.debug("Prepared document metadata", extra={**logger_context, "metadata": metadata})
 
         logger.info("Storing document in vector DB", extra=logger_context)
         retriever.add_texts(
+            ids=[doc_id],
             texts=[text_to_save],
             metadatas=[metadata],
             namespace=namespace

@@ -11,5 +11,9 @@ client = MongoClient(uri, server_api=ServerApi('1'))
 db = client[settings.MONGODB_DB]
 
 # Create a new collection
-collection = db[settings.MONGODB_COLLECTION]
+collection = db[settings.MONGODB_COLLECTION_USER]
+
+collection_memories = db[settings.MONGODB_COLLECTION_MEMORIES]
+
+
 

@@ -9,7 +9,8 @@ class Settings(BaseSettings):
     PINECONE_API_KEY: str
     PINECONE_INDEX: str
     GEMINI_API_KEY: str
-    MONGODB_COLLECTION: str
+    MONGODB_COLLECTION_USER: str
+    MONGODB_COLLECTION_MEMORIES: str
 
 
     class Config:
