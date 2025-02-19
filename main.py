@@ -6,10 +6,12 @@ from fastapi import Request, HTTPException
 from jose import JWTError
 from app.utils.jwt import decodeJWT, create_tokens
 from app.services.user_service import create_user_if_not_exists
+from fastapi.middleware.cors import CORSMiddleware
 from app.routers.get_quotes import router as get_quotes_router
 load_dotenv()
 app = FastAPI() 
-
+import logging
+logger = logging.getLogger(__name__)
 
 import time
 
@@ -17,7 +19,7 @@ import time
 async def authorisation_middleware(request: Request, call_next):
     access_token = request.cookies.get("access_token")
     refresh_token = request.cookies.get("refresh_token")
-
+    
     if not access_token:
         raise HTTPException(status_code=401, detail="Access token is missing")
     
@@ -53,6 +55,17 @@ async def authorisation_middleware(request: Request, call_next):
 
     return response
 
+
+origins = [
+    "http://localhost:5173",
+]
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 
 app.include_router(search_save_links_router)

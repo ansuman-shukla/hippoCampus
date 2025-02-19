@@ -43,7 +43,7 @@ async def save_link(
 
 
 
-@router.post("/search")
+@router.get("/search")
 async def search_links(
     query: str,
     request: Request

@@ -2,7 +2,7 @@ from fastapi import APIRouter
 from app.services.quotesService import get_quotes
 
 router = APIRouter(
-    prefix="/quote",
+    prefix="/quotes",
     tags=["quotes"]
 )
 
