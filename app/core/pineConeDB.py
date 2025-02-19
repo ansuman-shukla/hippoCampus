@@ -26,8 +26,7 @@ index = pc.Index(index_name)
 
 embeddings = GoogleGenerativeAIEmbeddings(model="models/embedding-001" , google_api_key=GEMINI_API_KEY)
 
-bm25encoder = BM25Encoder.default()
-
+bm25encoder = BM25Encoder()
 
 async def create_retriever(namespace: str , top_k: int = 5):
     try:
