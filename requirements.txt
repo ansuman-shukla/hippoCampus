@@ -5,7 +5,7 @@ motor
 requests
 python-dotenv
 supabase
-pinecone-client
+pinecone
 python-dotenv
 langchain_community
 langchain
