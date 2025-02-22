@@ -73,6 +73,7 @@ async def search_vector_db(
     top_k: int = 10
 ) -> List[Document]:
     """Search using E5 embeddings"""
+    
     if not namespace:
         raise InvalidRequestError("Missing user uuid - please login")
     

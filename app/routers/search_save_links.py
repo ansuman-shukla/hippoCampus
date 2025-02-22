@@ -49,7 +49,7 @@ async def save_link(
 async def search_links(
     query: str,
     request: Request
-) -> List[Document]:
+):
     
     """API endpoint for document search"""
 
