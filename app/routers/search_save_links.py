@@ -45,13 +45,14 @@ async def save_link(
 
 
 
-@router.get("/search")
+@router.post("/search")
 async def search_links(
     query: str,
     request: Request
 ) -> List[Document]:
     
     """API endpoint for document search"""
+
 
     user_id = request.cookies.get("user_id")
     try:
