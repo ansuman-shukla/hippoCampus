@@ -33,6 +33,7 @@ async def save_to_vector_db(obj: LinkSchema, namespace: str):
             site_name = "Unknown Site"
 
         metadata = {
+            "user_id": namespace,
             "title": obj.title,
             "note": obj.note,
             "source_url": obj.link,

@@ -7,6 +7,8 @@ from typing import List
 from langchain_core.documents import Document
 from app.services.pinecone_service import save_to_vector_db , search_vector_db
 
+# https://hippocampus-backend.onrender.com/links/save for saving links
+# https://hippocampus-backend.onrender.com/links/search for searching links
 
 router = APIRouter(
     prefix="/links",

@@ -10,6 +10,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.routers.get_quotes import router as get_quotes_router
 load_dotenv()
 app = FastAPI() 
+
 import logging
 logger = logging.getLogger(__name__)
 
