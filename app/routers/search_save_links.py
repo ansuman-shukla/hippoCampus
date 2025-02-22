@@ -55,8 +55,15 @@ async def search_links(
 
 
     user_id = request.cookies.get("user_id")
+    if not user_id:
+        logger.warning("Unauthorized save attempt - missing user ID")
+        raise HTTPException(status_code=401, detail="Authentication required")
+    
     try:
-        return await search_vector_db(query=query, namespace=user_id)
+        logger.info(f"Attempting to search document for user {user_id}")
+        result = await search_vector_db(query=query, namespace=user_id)
+        logger.info(f"Successfully searched document for user {user_id}")
+        return result
     except InvalidRequestError as e:
         raise HTTPException(status_code=400, detail=str(e))
     except (MissingNamespaceError, SearchExecutionError) as e:
