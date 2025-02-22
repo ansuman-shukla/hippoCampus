@@ -3,7 +3,7 @@ from app.schema.link_schema import Memory_Schema
 import logging
 from typing import Dict, Any
 from bson.errors import InvalidId 
-from bson import objectid
+from bson import ObjectId  # Changed this line
 from pymongo.errors import PyMongoError
 from app.exceptions.databaseExceptions import *
 
@@ -27,8 +27,8 @@ async def save_memory_to_db(memory_data: Memory_Schema):
         if not result.inserted_id:
             raise MemoryDatabaseError("Failed to save memory")
 
-        # Add ID to returned data
-        memory_data["_id"] = str(objectid(result.inserted_id))
+        # Fixed ObjectId usage
+        memory_data["_id"] = str(result.inserted_id)
         logger.info(f"Successfully saved memory with id {result.inserted_id}")
         
         return {"status": "saved", "memory": memory_data}
