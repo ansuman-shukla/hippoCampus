@@ -1,7 +1,7 @@
 from jose import jwt, JWTError
 from fastapi import FastAPI, Request, HTTPException 
 from dotenv import load_dotenv
-from app.routers.search_save_links import router as search_save_links_router
+from app.routers.bookmarkRouters import router as bookmark_router
 from fastapi import Request, HTTPException
 from jose import JWTError
 from app.utils.jwt import decodeJWT, create_tokens
@@ -66,7 +66,7 @@ app.add_middleware(
 )
 
 
-app.include_router(search_save_links_router)
+app.include_router(bookmark_router)
 app.include_router(get_quotes_router)
 
 

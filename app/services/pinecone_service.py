@@ -12,7 +12,11 @@ from app.exceptions.httpExceptionsSave import *
 async def save_to_vector_db(obj: LinkSchema, namespace: str):
     """Save document to vector database using E5 embeddings"""
     
-    doc_id = f"{namespace}-{datetime.now().timestamp()}"
+    # Convert timestamp to integer for cleaner ID
+    timestamp = datetime.now().strftime("%Y-%d-%m#%H-%M-%S")
+    doc_id = f"{namespace}-{timestamp}"
+
+    print(f"Saving document with ID: {doc_id}")
     
     logger_context = {
         "user_id": namespace,
@@ -73,7 +77,7 @@ async def search_vector_db(
     top_k: int = 10
 ) -> List[Document]:
     """Search using E5 embeddings"""
-    
+
     if not namespace:
         raise InvalidRequestError("Missing user uuid - please login")
     
@@ -100,8 +104,10 @@ async def search_vector_db(
         # Convert to Langchain documents format
         documents = []
         for match in results['matches']:
+            doc_id = match['id']
             metadata = match['metadata']
             documents.append(Document(
+                id=doc_id,
                 page_content=f"Title: {metadata['title']}\nNote: {metadata['note']}\nSource: {metadata['source_url']}",
                 metadata=metadata
             ))
@@ -114,3 +120,21 @@ async def search_vector_db(
     except Exception as e:
         logger.error("Search failed", extra={"user_id": namespace}, exc_info=True)
         raise SearchExecutionError(f"Search failed: {str(e)}")
+
+
+async def delete_from_vector_db(doc_id: str, namespace: str):
+    try:
+        index.delete(
+            ids=[doc_id],
+            namespace=namespace
+        )
+
+        return {"status": "deleted", "doc_id": doc_id}
+
+    except Exception as e:
+        logger.error("Error deleting document", extra={"user_id": namespace, "doc_id": doc_id}, exc_info=True)
+        raise DocumentStorageError(
+            message="Failed to delete document",
+            user_id=namespace,
+            doc_id=doc_id
+        ) from e

@@ -9,8 +9,8 @@ logger = logging.getLogger(__name__)
 async def decodeJWT(access_token: str) -> dict:
     # Clean the token input
     access_token = access_token.strip()
-    logger.info(f"JWT secret: {settings.SUPABASE_ANON_KEY}")
-    logger.info(f"Decoding token: {access_token}")
+    # logger.info(f"JWT secret: {settings.SUPABASE_ANON_KEY}")
+    # logger.info(f"Decoding token: {access_token}")
     # Remove Bearer prefix if present
     if access_token.lower().startswith("bearer "):
         access_token = access_token[7:].strip()
