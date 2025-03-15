@@ -6,6 +6,7 @@ from app.schema.link_schema import Link as link_schema
 from typing import List
 from langchain_core.documents import Document
 from app.services.pinecone_service import *
+from app.services.memories_service import *
 
 # https://hippocampus-backend.onrender.com/links/save for saving links
 # https://hippocampus-backend.onrender.com/links/search for searching links
@@ -96,4 +97,29 @@ async def delete_link(
     except ValidationError as e:
         logger.error(f"Invalid document data for user {user_id}: {str(e)}")
         raise HTTPException(status_code=422, detail="Invalid document format")
+    
+
+
+@router.get("/get")
+async def get_all_bookmarks(request: Request):
+    user_id = request.cookies.get("user_id")
+    if not user_id:
+        logger.warning("Unauthorized save attempt - missing user ID")
+        raise HTTPException(status_code=401, detail="Authentication required")
+    
+    try:
+        logger.info(f"Attempting to get all documents for user {user_id}")
+        result = await get_all_bookmarks_from_db(user_id)
+        logger.info(f"Successfully retrieved all documents for user {user_id}")
+        return result
+    except DocumentSaveError as e:
+        logger.error(f"Document save failed for user {e.user_id}: {str(e)}", exc_info=True)
+        status_code = 400 if isinstance(e, InvalidURLError) else 503
+        raise HTTPException(status_code=status_code, detail=str(e))
+    except ValidationError as e:
+        logger.error(f"Invalid document data for user {user_id}: {str(e)}")
+        raise HTTPException(status_code=422, detail="Invalid document format")  
+    except Exception as e:
+        logger.critical(f"Unexpected error saving document for user {user_id}: {str(e)}", exc_info=True)
+        raise HTTPException(status_code=500, detail="Internal server error")
     

@@ -1,10 +1,12 @@
 from app.core.database import collection_memories
-from app.schema.link_schema import Memory_Schema
+# from app.schema.link_schema import Memory_Schema
 import logging
 from typing import Dict, Any
 from bson.errors import InvalidId 
 from bson import ObjectId  # Changed this line
+from app.models.bookmarkModels import *
 from pymongo.errors import PyMongoError
+from app.schema.bookmarksSchema import Memory_Schema
 from app.exceptions.databaseExceptions import *
 
 logger = logging.getLogger(__name__)
@@ -40,3 +42,12 @@ async def save_memory_to_db(memory_data: Memory_Schema):
         logger.error(f"Unexpected error: {str(e)}")
         raise MemoryServiceError(f"Error saving memory: {str(e)}")
 
+
+
+async def get_all_bookmarks_from_db(user_id):
+    try:
+        results = collection_memories.find({"user_id": user_id})
+        return bookmarkModels(results)
+    except PyMongoError as e:
+        logger.error(f"Database error: {str(e)}")
+        raise MemoryDatabaseError(f"Database error: {str(e)}")
