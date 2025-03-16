@@ -30,6 +30,7 @@ async def save_to_vector_db(obj: LinkSchema, namespace: str):
         text_to_embed = f"{obj.title}, {obj.note}, {site_name}"
         
         metadata = {
+            "doc_id": doc_id,
             "user_id": namespace,
             "title": obj.title,
             "note": obj.note,
