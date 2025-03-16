@@ -1,7 +1,7 @@
 def bookmarkModel(item):
     return {
         'id': str(item.get('_id', '')) if item.get('_id') else None,
-        'doc_id': item.get('doc_id', None),
+        # 'doc_id': item.get('doc_id', None),
         'user_id': item.get('user_id', None),
         'title': item.get('title', None),
         'note': item.get('note', None),
