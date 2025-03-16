@@ -1,12 +1,13 @@
 def bookmarkModel(item):
     return {
-        'id': str(item['_id']),
-        'user_id': item['user_id'],
-        'title': item['title'],
-        'note': item['note'],
-        'source_url': item['source_url'],
-        'site_name': item['site_name'],
-        'date': item['date']
+        'id': str(item.get('_id', '')) if item.get('_id') else None,
+        'doc_id': item.get('doc_id', None),
+        'user_id': item.get('user_id', None),
+        'title': item.get('title', None),
+        'note': item.get('note', None),
+        'source_url': item.get('source_url', None),
+        'site_name': item.get('site_name', None),
+        'date': item.get('date', None)
     }
 
 def bookmarkModels(items):

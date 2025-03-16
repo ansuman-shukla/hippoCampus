@@ -13,3 +13,7 @@ class MemoryValidationError(MemoryServiceError):
 class MemoryDatabaseError(MemoryServiceError):
     """Raised when database operations fail"""
     pass
+
+class MemoryNotFoundError(MemoryServiceError):
+    """Raised when a requested memory document cannot be found"""
+    pass

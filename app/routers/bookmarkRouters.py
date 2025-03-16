@@ -77,7 +77,8 @@ async def search_links(
 
 @router.delete("/delete")
 async def delete_link(
-    doc_id: str,
+    doc_object_id_mongo: str,
+    doc_id_pincone: str,
     request: Request
 ):
     user_id = request.cookies.get("user_id")
@@ -87,7 +88,8 @@ async def delete_link(
     
     try:
         logger.info(f"Attempting to delete document for user {user_id}")
-        result = await delete_from_vector_db(doc_id=doc_id, namespace=user_id)
+        result = await delete_from_vector_db(doc_id=doc_id_pincone, namespace=user_id)
+        await delete_from_db(doc_object_id_mongo)
         logger.info(f"Successfully deleted document for user {user_id}")
         return result
     except DocumentSaveError as e:

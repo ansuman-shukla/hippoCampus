@@ -51,3 +51,22 @@ async def get_all_bookmarks_from_db(user_id):
     except PyMongoError as e:
         logger.error(f"Database error: {str(e)}")
         raise MemoryDatabaseError(f"Database error: {str(e)}")
+    
+
+    except Exception as e:
+        logger.error(f"Unexpected error: {str(e)}")
+        raise MemoryServiceError(f"Error saving memory: {str(e)}")
+    
+
+async def delete_from_db(doc_object_id_mongo: str):
+    try:
+        result = collection_memories.delete_one({"_id": ObjectId(doc_object_id_mongo)})
+        if result.deleted_count == 0:
+            raise MemoryNotFoundError(f"Memory with id {doc_object_id_mongo} not found")     #exception to be added in exceptions file
+        return {"status": "deleted"}
+    except PyMongoError as e:
+        logger.error(f"Database error: {str(e)}")
+        raise MemoryDatabaseError(f"Database error: {str(e)}")
+    except Exception as e:
+        logger.error(f"Unexpected error: {str(e)}")
+        raise MemoryServiceError(f"Error saving memory: {str(e)}")

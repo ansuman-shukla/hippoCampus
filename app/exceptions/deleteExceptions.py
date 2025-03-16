@@ -1,5 +1,5 @@
 import logging
-
+from typing import Optional
 # Configure logging
 logging.basicConfig(
     level=logging.INFO,
